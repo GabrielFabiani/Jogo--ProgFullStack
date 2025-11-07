@@ -13,25 +13,39 @@ layout.fillRect(0, 0, canvas.width, canvas.height);
 layout.closePath();
 
 //Aplicando gravidade nos jogadores
-const gravidade = 0.2
+const gravidade = 0.7
 
 // Classe base para os personagens (Jogador e Inimigo)
 class Sprite {
     // O construtor recebe as propriedades iniciais de posição e velocidade
-    constructor({position, velocidade}) {
+    constructor({position, velocidade, color = 'red'}) {
         this.position = position
         this.velocidade = velocidade
         this.height = 150 // Altura padrão do personagem
         this.ultimatecla // Variável para rastrear a última tecla de movimento horizontal pressionada (para movimento contínuo)
+        this.attackBox = { //inicio function ataque
+            position: this.position,
+            width: 100,
+            height: 50
+        }
+        this.color = color
     }
 
     // Método para desenhar o personagem
     draw(){
         layout.beginPath();
-        layout.fillStyle = 'red' // Cor do personagem
+        layout.fillStyle = this.color // Cor do personagem
         // Desenha o retângulo do personagem
         layout.fillRect(this.position.x, this.position.y, 50, this.height);
         layout.closePath();
+
+        // attack box
+        layout.fillStyle = "green"
+        layout.fillRect(this.attackBox.position.x, 
+            this.attackBox.position.y, 
+            this.attackBox.width, 
+            this.attackBox.height
+        )
     }
 
     // Método para atualizar a posição do personagem a cada quadro de animação
@@ -60,7 +74,7 @@ const jogador = new Sprite({
     velocidade:{ // Velocidade inicial (parado)
         x: 0,
         y: 0
-    }
+    },
 });
 
 // Criando o inimigo
@@ -72,7 +86,8 @@ position:{ // Posição inicial do inimigo
     velocidade:{ // Velocidade inicial (parado)
         x: 0,
         y: 0
-    }
+    },
+    color: 'blue'
 });
 
 // Definindo o estado das teclas (se estão pressionadas ou não)
@@ -99,7 +114,6 @@ const teclas = {
     }
 }
 // Variável global para a última tecla horizontal pressionada do jogador
-let ultimatecla
 
 // Função principal de animação do jogo (Loop do Jogo)
 function animacao(){
@@ -117,13 +131,14 @@ function animacao(){
 
     // --- Lógica de Movimento Horizontal do Jogador ---
     jogador.velocidade.x = 0 // Reseta a velocidade horizontal do jogador
+    inimigo.velocidade.x = 0
 
     // Move para a esquerda se 'a' estiver pressionada E for a última tecla pressionada
     if(teclas.a.pressed && ultimatecla === 'a'){
-        jogador.velocidade.x = -1
+        jogador.velocidade.x = -5
     // Move para a direita se 'd' estiver pressionada E for a última tecla pressionada
     }else if(teclas.d.pressed && ultimatecla === 'd'){
-        jogador.velocidade.x = 1
+        jogador.velocidade.x = 5
     }
 
     // --- Lógica de Movimento Horizontal do Inimigo ---
@@ -131,13 +146,16 @@ function animacao(){
 
     // Move para a esquerda se 'ArrowLeft' estiver pressionada E for a última tecla pressionada
     if(teclas.ArrowLeft.pressed && inimigo.ultimatecla === 'ArrowLeft'){
-        inimigo.velocidade.x = -1
+        inimigo.velocidade.x = -5
     // Move para a direita se 'ArrowRight' estiver pressionada E for a última tecla pressionada
     }else if(teclas.ArrowRight.pressed && inimigo.ultimatecla === 'ArrowRight'){
-        inimigo.velocidade.x = 1
+        inimigo.velocidade.x = 5
+    }
+    //detecta colisoes (ataques)
+    if (jogador.attackBox.position.x + jogador.attackBox.width >= inimigo.position.x){
+        console.log('go');
     }
 }
-
 // Inicia o loop de animação
 animacao()
 
@@ -145,29 +163,29 @@ animacao()
 window.addEventListener('keydown', (event) =>{
     switch (event.key){
         // --- Controles do Jogador ---
-        case 'd':
+    case 'd':
         teclas.d.pressed = true // Marca 'd' como pressionada
         ultimatecla = 'd' // Define 'd' como a última tecla horizontal pressionada
         break
-        case 'a':
+    case 'a':
         teclas.a.pressed = true // Marca 'a' como pressionada
         ultimatecla = 'a' // Define 'a' como a última tecla horizontal pressionada
         break
-        case 'w': // Pulo
-        jogador.velocidade.y = -10 // Aplica uma velocidade vertical negativa (para cima)
+    case 'w': // Pulo
+        jogador.velocidade.y = -20 // Aplica uma velocidade vertical negativa (para cima)
         break
 
         // --- Controles do Inimigo ---
-        case 'ArrowRight':
+    case 'ArrowRight':
         teclas.ArrowRight.pressed = true 
         inimigo.ultimatecla = 'ArrowRight'
         break
-        case 'ArrowLeft':
+    case 'ArrowLeft':
         teclas.ArrowLeft.pressed = true 
         inimigo.ultimatecla = 'ArrowLeft'
         break
-        case 'ArrowUp': // Pulo
-        inimigo.velocidade.y = -10
+    case 'ArrowUp': // Pulo
+        inimigo.velocidade.y = -20
         break
     }
     console.log(event.key) // Exibe a tecla pressionada no console
