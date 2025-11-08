@@ -142,7 +142,8 @@ const teclas = {
 }
 // Variável global para a última tecla horizontal pressionada do jogador
 
-function ColisaoRetangular({ retangulo1, retangulo2 }) { //funcao de colisoes (ataques)
+//funcao de colisoes (ataques)
+function ColisaoRetangular({ retangulo1, retangulo2 }) { 
     return(
         retangulo1.attackBox.position.x + retangulo1.attackBox.width >=
         retangulo2.position.x && retangulo1.attackBox.position.x <= retangulo2.position.x + retangulo2.width &&
@@ -150,6 +151,40 @@ function ColisaoRetangular({ retangulo1, retangulo2 }) { //funcao de colisoes (a
         retangulo1.attackBox.position.y <= retangulo2.position.y + retangulo2.height 
     )
 }
+
+function determinaVencedor({jogador, inimigo, timerId}){
+    clearTimeout(timerId)
+    document.querySelector('#resultado').style.display = 'flex' //altera o local de onde vai aparecer o texto de resultado
+    
+    if (jogador.saude === inimigo.saude) {
+        document.querySelector('#resultado').innerHTML = 'Empate'
+    } 
+    
+    else if (jogador.saude > inimigo.saude) {
+        document.querySelector('#resultado').innerHTML = 'Player 1 Wins'
+    }
+
+    else if (jogador.saude < inimigo.saude) {
+        document.querySelector('#resultado').innerHTML = 'Player 2 Wins'
+    }
+}
+
+//Funcao para diminuir gradativamente o tempo do timer
+let timer = 60
+let timerId
+function diminuicaoTempo(){     
+    if (timer>0) {
+        timerId = setTimeout(diminuicaoTempo, 1000) //para o tempo quando encerra a luta por esgotamento de vida
+        timer--
+        document.querySelector('#timer').innerHTML = timer
+    }
+
+    if (timer === 0){
+        determinaVencedor({jogador, inimigo, timerId})
+    }
+}
+
+diminuicaoTempo()
 
 // Função principal de animação do jogo (Loop do Jogo)
 function animacao(){
@@ -170,10 +205,10 @@ function animacao(){
     inimigo.velocidade.x = 0
 
     // Move para a esquerda se 'a' estiver pressionada E for a última tecla pressionada
-    if(teclas.a.pressed && ultimatecla === 'a'){
+    if(teclas.a.pressed && jogador.ultimatecla === 'a'){
         jogador.velocidade.x = -5
     // Move para a direita se 'd' estiver pressionada E for a última tecla pressionada
-    }else if(teclas.d.pressed && ultimatecla === 'd'){
+    }else if(teclas.d.pressed && jogador.ultimatecla === 'd'){
         jogador.velocidade.x = 5
     }
 
@@ -212,7 +247,14 @@ function animacao(){
         jogador.saude -= 20
         document.querySelector('#saude_jogador').style.width = jogador.saude + '%'
     }
+    // fim do jogo baseado na vida
+if (inimigo.saude <=0 || jogador.saude <=0){
+    determinaVencedor({jogador, inimigo, timerId})
 }
+}
+
+
+
 // Inicia o loop de animação
 animacao()
 
@@ -222,11 +264,11 @@ window.addEventListener('keydown', (event) =>{
         // --- Controles do Jogador ---
     case 'd':
         teclas.d.pressed = true // Marca 'd' como pressionada
-        ultimatecla = 'd' // Define 'd' como a última tecla horizontal pressionada
+        jogador.ultimatecla = 'd' // Define 'd' como a última tecla horizontal pressionada
         break
     case 'a':
         teclas.a.pressed = true // Marca 'a' como pressionada
-        ultimatecla = 'a' // Define 'a' como a última tecla horizontal pressionada
+        jogador.ultimatecla = 'a' // Define 'a' como a última tecla horizontal pressionada
         break
     case 'w': // Pulo
         jogador.velocidade.y = -20 // Aplica uma velocidade vertical negativa (para cima)
