@@ -15,76 +15,16 @@ layout.closePath();
 //Aplicando gravidade nos jogadores
 const gravidade = 0.7
 
-// Classe base para os personagens (Jogador e Inimigo)
-class Sprite {
-    // O construtor recebe as propriedades iniciais de posição e velocidade
-    constructor({position, velocidade, color = 'red', offset}) {
-        this.position = position
-        this.velocidade = velocidade
-        this.width = 50
-        this.height = 150 // Altura padrão do personagem
-        this.ultimatecla // Variável para rastrear a última tecla de movimento horizontal pressionada (para movimento contínuo)
-        this.attackBox = { //inicio function ataque
-            position: {
-                x:this.position.x,
-                y: this.position.y
-            },
-            offset, //offset: offset,
-            width: 100,
-            height: 50
-        }
-        this.color = color
-        this.atacando
-        this.saude = 100
-    }
-
-    // Método para desenhar o personagem
-    draw(){
-        layout.beginPath();
-        layout.fillStyle = this.color // Cor do personagem
-        // Desenha o retângulo do personagem
-        layout.fillRect(this.position.x, this.position.y, this.width, this.height);
-        layout.closePath();
-
-        // attack box
-        if (this.atacando) {
-        layout.fillStyle = "green"
-        layout.fillRect(this.attackBox.position.x, 
-            this.attackBox.position.y, 
-            this.attackBox.width, 
-            this.attackBox.height
-        )
-        }
-    }
-
-    // Método para atualizar a posição do personagem a cada quadro de animação
-    atualiza(){
-        this.draw() // Redesenha o personagem na nova posição
-        this.attackBox.position.x = this.position.x + this.attackBox.offset.x //Atualiza posicao da ferramenta de ataque 
-        this.attackBox.position.y = this.position.y
-        // Atualiza a posição com base na velocidade
-        this.position.x += this.velocidade.x
-        this.position.y += this.velocidade.y
-
-        // Verifica se o personagem está no chão
-        if (this.position.y + this.height + this.velocidade.y >= canvas.height){
-            this.velocidade.y = 0; // Para a queda (velocidade vertical = 0)
-        } else
-            // Aplica a gravidade se o personagem não estiver no chão
-            this.velocidade.y += gravidade 
-    }
-    ataque() {
-    this.atacando = true
-    setTimeout(() => {
-        this.atacando = false
-    }, 100)
-}
-}
-
-
+const background = new Sprite({
+    position: {
+        x: 0,
+        y: 0
+    },
+    imageSrc: '/img/background.png'
+})
 
 // Criando o jogador - Posições iniciais
-const jogador = new Sprite({
+const jogador = new Lutador({
     position:{ // Posição inicial (canto superior esquerdo)
     x: 0,
     y: 0
@@ -100,7 +40,7 @@ const jogador = new Sprite({
 });
 
 // Criando o inimigo
-const inimigo = new Sprite({
+const inimigo = new Lutador({
 position:{ // Posição inicial do inimigo
     x: 400,
     y: 100
@@ -142,48 +82,6 @@ const teclas = {
 }
 // Variável global para a última tecla horizontal pressionada do jogador
 
-//funcao de colisoes (ataques)
-function ColisaoRetangular({ retangulo1, retangulo2 }) { 
-    return(
-        retangulo1.attackBox.position.x + retangulo1.attackBox.width >=
-        retangulo2.position.x && retangulo1.attackBox.position.x <= retangulo2.position.x + retangulo2.width &&
-        retangulo1.attackBox.position.y + retangulo1.attackBox.height >= retangulo2.position.y &&
-        retangulo1.attackBox.position.y <= retangulo2.position.y + retangulo2.height 
-    )
-}
-
-function determinaVencedor({jogador, inimigo, timerId}){
-    clearTimeout(timerId)
-    document.querySelector('#resultado').style.display = 'flex' //altera o local de onde vai aparecer o texto de resultado
-    
-    if (jogador.saude === inimigo.saude) {
-        document.querySelector('#resultado').innerHTML = 'Empate'
-    } 
-    
-    else if (jogador.saude > inimigo.saude) {
-        document.querySelector('#resultado').innerHTML = 'Player 1 Wins'
-    }
-
-    else if (jogador.saude < inimigo.saude) {
-        document.querySelector('#resultado').innerHTML = 'Player 2 Wins'
-    }
-}
-
-//Funcao para diminuir gradativamente o tempo do timer
-let timer = 60
-let timerId
-function diminuicaoTempo(){     
-    if (timer>0) {
-        timerId = setTimeout(diminuicaoTempo, 1000) //para o tempo quando encerra a luta por esgotamento de vida
-        timer--
-        document.querySelector('#timer').innerHTML = timer
-    }
-
-    if (timer === 0){
-        determinaVencedor({jogador, inimigo, timerId})
-    }
-}
-
 diminuicaoTempo()
 
 // Função principal de animação do jogo (Loop do Jogo)
@@ -195,6 +93,7 @@ function animacao(){
     // Redesenha o fundo a cada quadro (limpa a tela)
     layout.fillStyle = 'black'
     layout.fillRect(0, 0, canvas.width, canvas.height) 
+    background.atualiza()
     
     // Atualiza a posição e desenha os personagens
     jogador.atualiza() 
