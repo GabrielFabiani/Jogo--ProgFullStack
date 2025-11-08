@@ -1,29 +1,82 @@
 //Classe base para o background
 class Sprite {
     // O construtor recebe as propriedades iniciais de posição e imagem
-    constructor({position, imageSrc}) {
+    constructor({position, imageSrc, scale = 1, framesMax = 1, offset = {x: 0, y: 0} }) {
         this.position = position
         this.width = 50
         this.height = 150 // Altura padrão do personagem
         this.image = new Image() //linhas para insercao de img de fundo
         this.image.src = imageSrc
+        this.scale = scale
+        this.framesMax = framesMax
+        this.framesCurrent = 0
+        this.framesElapsed = 0
+        this.framesHold = 20
+        this.offset = offset
     }
 
-    // Método para desenhar a imagem de fundo
+    // Método para desenhar a imagem de fundo e os objetos
     draw(){
-        layout.drawImage(this.image, this.position.x, this.position.y)
+        layout.drawImage(
+            this.image, 
+            this.framesCurrent * (this.image.width / this.framesMax),
+            0,
+            this.image.width / this.framesMax,
+            this.image.height,
+            this.position.x - this.offset.x, 
+            this.position.y - this.offset.y, 
+            (this.image.width / this.framesMax) * this.scale, 
+            this.image.height * this.scale
+        )
     }
+
+    animateFrame(){
+        this.framesElapsed++
+
+        if (this.framesElapsed % this.framesHold === 0){
+             if (this.framesCurrent < this.framesMax - 1){
+            this.framesCurrent++
+            }else{
+                this.framesCurrent = 0
+            }
+        }
+    }
+
+
+
+
     // Método para atualizar a posição do personagem a cada quadro de animação
     atualiza(){
         this.draw() // Redesenha o personagem na nova posição
+        this.animateFrame() // Chama a função para animar a fumaça da chaminé
+
+        
     }
 }
 
 // Classe base para os personagens (Jogador e Inimigo)
-class Lutador { 
+class Lutador extends Sprite { 
+
     // O construtor recebe as propriedades iniciais de posição e velocidade
-    constructor({position, velocidade, color = 'red', offset}) {
-        this.position = position
+    constructor({
+        position,
+        velocidade, 
+        color = 'red', 
+        imageSrc, 
+        scale = 1, 
+        framesMax = 1,
+        offset = {x: 0, y: 0},
+        sprites
+    }) {
+        super({
+            position,
+            imageSrc,
+            scale,
+            framesMax,
+            offset
+        })
+
+        
         this.velocidade = velocidade
         this.width = 50
         this.height = 150 // Altura padrão do personagem
@@ -40,30 +93,25 @@ class Lutador {
         this.color = color
         this.atacando
         this.saude = 100
-    }
+        this.framesCurrent = 0
+        this.framesElapsed = 0
+        this.framesHold = 15
+        this.sprites = sprites
 
-    // Método para desenhar o personagem
-    draw(){
-        layout.beginPath();
-        layout.fillStyle = this.color // Cor do personagem
-        // Desenha o retângulo do personagem
-        layout.fillRect(this.position.x, this.position.y, this.width, this.height);
-        layout.closePath();
-
-        // attack box
-        if (this.atacando) {
-        layout.fillStyle = "green"
-        layout.fillRect(this.attackBox.position.x, 
-            this.attackBox.position.y, 
-            this.attackBox.width, 
-            this.attackBox.height
-        )
+        for (const sprite in this.sprites){
+            sprites[sprite].image = new Image()
+            sprites[sprite].image.src = sprites[sprite].imageSrc
         }
+        console.log(this.sprites)
     }
+
+   
 
     // Método para atualizar a posição do personagem a cada quadro de animação
     atualiza(){
         this.draw() // Redesenha o personagem na nova posição
+        this.animateFrame() // Chama a função para animar o personagem
+
         this.attackBox.position.x = this.position.x + this.attackBox.offset.x //Atualiza posicao da ferramenta de ataque 
         this.attackBox.position.y = this.position.y
         // Atualiza a posição com base na velocidade
@@ -79,8 +127,31 @@ class Lutador {
     }
     ataque() {
     this.atacando = true
-    setTimeout(() => {
-        this.atacando = false
-    }, 100)
-}
+        setTimeout(() => {
+            this.atacando = false
+        }, 100)
+    }
+
+    switchSprite(sprite) {
+        switch (sprite){
+            case 'idle':
+                if (this.image !== this.sprites.idle.image){
+                  this.image = this.sprites.idle.image 
+                  this.framesMax = this.sprites.idle.framesMax
+                }
+               break
+            case 'run':
+                if (this.image !== this.sprites.run.image){
+                  this.image = this.sprites.run.image 
+                  this.framesMax = this.sprites.run.framesMax
+                }
+               break
+            case 'jump':
+                if (this.image !== this.sprites.jump.image){
+                  this.image = this.sprites.jump.image
+                  this.framesMax = this.sprites.jump.framesMax
+                }
+               break
+        }
+    }
 }
