@@ -95,8 +95,36 @@ position:{ // Posição inicial do inimigo
     offset: {
         x: -50, // Ajusta a posição do inimigo
         y: 0
+    },
+    imageSrc: '../img/kenji/Idle.png', // Imagem inicial (parado)
+    framesMax: 8, // Máximo de quadros de animação para a imagem inicial
+    scale: 2.5, // Escala o personagem
+    offset:{ // Novo deslocamento para centralizar a imagem/caixa de colisão
+        x: 210,
+        y: 167
+    },
+    sprites: { // Define as diferentes imagens (sprites) para cada estado do jogador
+      idle: { // Estado Parado
+        imageSrc: '../img/kenji/Idle.png',
+        framesMax: 4
+      },
+      run: { // Estado Correndo
+        imageSrc: '../img/kenji/Run.png',
+        framesMax: 8
+      },
+      jump: { // Estado Pulando
+        imageSrc: '../img/kenji/Jump.png',
+        framesMax: 2
+      },
+      fall:{ // Estado Caindo
+        imageSrc: '../img/kenji/Fall.png',
+        framesMax: 2
+      },
+      attack1:{ // Estado Atacando
+        imageSrc: '../img/kenji/Attack1.png',
+        framesMax: 4
+      }
     }
-    
 });
 
 // Definindo o estado das teclas (se estão pressionadas ou não)
@@ -140,7 +168,7 @@ function animacao(){
     
     // Atualiza a posição e desenha os personagens
     jogador.atualiza() // Move o jogador e aplica a gravidade
-    //inimigo.atualiza() // Move o inimigo e aplica a gravidade (está comentado, mas provavelmente deveria estar ativo)
+    inimigo.atualiza() // Move o inimigo e aplica a gravidade (está comentado, mas provavelmente deveria estar ativo)
 
     // --- Lógica de Movimento Horizontal do Jogador ---
     jogador.velocidade.x = 0 // Reseta a velocidade horizontal do jogador a cada quadro
@@ -171,9 +199,20 @@ function animacao(){
     // Move para a esquerda/direita do inimigo (Lógica idêntica à do jogador)
     if(teclas.ArrowLeft.pressed && inimigo.ultimatecla === 'ArrowLeft'){
         inimigo.velocidade.x = -5
+        inimigo.switchSprite('run')
     // Move para a direita se 'ArrowRight' estiver pressionada E for a última tecla pressionada
     }else if(teclas.ArrowRight.pressed && inimigo.ultimatecla === 'ArrowRight'){
         inimigo.velocidade.x = 5
+        inimigo.switchSprite('run')
+    }
+    else{
+        inimigo.switchSprite('idle') // Assume que o jogador está parado por padrão
+    }
+     // Lógica para mudar para o sprite de pulo
+    if (inimigo.velocidade.y < 0){ // Se a velocidade vertical for negativa, está subindo (pulando)
+        inimigo.switchSprite('jump') // Muda para a animação de pulo
+    } else if (inimigo.velocidade.y > 0){ // Se a velocidade vertical for positiva, está descendo (caindo)
+        inimigo.switchSprite('fall') // Muda para a animação de queda
     }
 
     //detecta colisoes (ataques) do jogador
@@ -243,7 +282,7 @@ window.addEventListener('keydown', (event) =>{
         break
 
     case 'ArrowDown': // Ataque inimigo
-        inimigo.atacando = true // Define o estado de ataque do inimigo como ativo
+        inimigo.ataque() // Define o estado de ataque do inimigo como ativo
         break
     }
     

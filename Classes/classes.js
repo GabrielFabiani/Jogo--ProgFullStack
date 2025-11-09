@@ -114,6 +114,8 @@ class Lutador extends Sprite {
 
         this.attackBox.position.x = this.position.x + this.attackBox.offset.x //Atualiza posicao da ferramenta de ataque 
         this.attackBox.position.y = this.position.y
+
+        
         // Atualiza a posição com base na velocidade
         this.position.x += this.velocidade.x
         this.position.y += this.velocidade.y
@@ -126,6 +128,8 @@ class Lutador extends Sprite {
             // Aplica a gravidade se o personagem não estiver no chão
             this.velocidade.y += gravidade 
     }
+
+    // Metodo de ataque
     ataque() {
     this.switchSprite('attack1')
     this.atacando = true
@@ -135,7 +139,8 @@ class Lutador extends Sprite {
     }
 
     switchSprite(sprite) {
-        if (this.image === this.sprites.attack1.image && this.framesCurrent < this.sprites.attack1.framesMax -1)
+        if (this.image === this.sprites.attack1.image && 
+            this.framesCurrent < this.sprites.attack1.framesMax -1)
             return
         switch (sprite){
             case 'idle':
