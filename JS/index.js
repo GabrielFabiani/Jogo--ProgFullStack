@@ -73,6 +73,10 @@ const jogador = new Lutador({ // Cria o primeiro Lutador (o jogador)
       fall:{ // Estado Caindo
         imageSrc: '../img/samuraiMack/Fall.png',
         framesMax: 2
+      },
+      attack1:{ // Estado Atacando
+        imageSrc: '../img/samuraiMack/Attack1.png',
+        framesMax: 6
       }
     }
 });

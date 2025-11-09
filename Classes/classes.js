@@ -127,6 +127,7 @@ class Lutador extends Sprite {
             this.velocidade.y += gravidade 
     }
     ataque() {
+    this.switchSprite('attack1')
     this.atacando = true
         setTimeout(() => {
             this.atacando = false
@@ -134,6 +135,8 @@ class Lutador extends Sprite {
     }
 
     switchSprite(sprite) {
+        if (this.image === this.sprites.attack1.image && this.framesCurrent < this.sprites.attack1.framesMax -1)
+            return
         switch (sprite){
             case 'idle':
                 if (this.image !== this.sprites.idle.image){
@@ -163,6 +166,13 @@ class Lutador extends Sprite {
                   this.framesCurrent = 0
                 }
                break
+            case 'attack1':
+                if (this.image !== this.sprites.attack1.image){
+                  this.image = this.sprites.attack1.image
+                  this.framesMax = this.sprites.attack1.framesMax
+                  this.framesCurrent = 0
+                }
+                break
         }
     }
 }
