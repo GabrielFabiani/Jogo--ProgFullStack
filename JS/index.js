@@ -78,6 +78,14 @@ const jogador = new Lutador({ // Cria o primeiro Lutador (o jogador)
         imageSrc: '../img/samuraiMack/Attack1.png',
         framesMax: 6
       }
+    },
+    attackBox: {
+        offset:{
+            x:100,
+            y:50
+        },
+        width:160,
+        height:50
     }
 });
 
@@ -123,7 +131,15 @@ position:{ // Posição inicial do inimigo
       attack1:{ // Estado Atacando
         imageSrc: '../img/kenji/Attack1.png',
         framesMax: 4
-      }
+      } 
+    },
+    attackBox: {
+        offset:{
+            x:-170,
+            y:50
+        },
+        width:170,
+        height:50
     }
 });
 
@@ -221,11 +237,20 @@ function animacao(){
             retangulo1: jogador,
             retangulo2: inimigo
         }) &&
-        jogador.atacando // Verifica se o jogador está no estado de ataque
+        jogador.atacando &&
+        jogador.framesCurrent === 4 // Verifica se o jogador está no estado de ataque
     ){
         jogador.atacando = false // Desativa o ataque após a colisão
         inimigo.saude -= 20 // Subtrai 20 pontos de vida do inimigo
         document.querySelector('#saude_inimigo').style.width = inimigo.saude + '%' // Atualiza visualmente a barra de vida do inimigo
+    }
+
+    //Dectecta se jogador errar
+    if (
+        jogador.atacando && 
+        jogador.framesCurrent === 4
+    ){
+        jogador.atacando = false // Desativa o ataque se errar
     }
 
     if (
@@ -233,12 +258,23 @@ function animacao(){
             retangulo1: inimigo,
             retangulo2: jogador
         }) &&
-        inimigo.atacando // Verifica se o inimigo está no estado de ataque
+        inimigo.atacando &&
+        inimigo.framesCurrent === 2 // Verifica se o inimigo está no estado de ataque
     ){
         inimigo.atacando = false // Desativa o ataque do inimigo
         jogador.saude -= 20 // Subtrai 20 pontos de vida do jogador
         document.querySelector('#saude_jogador').style.width = jogador.saude + '%' // Atualiza visualmente a barra de vida do jogador
     }
+
+    
+    //Dectecta se inimigo errar
+    if (
+        inimigo.atacando &&
+        inimigo.framesCurrent === 2
+    ){
+        inimigo.atacando = false // Desativa o ataque se errar
+    }
+
     // fim do jogo baseado na vida
 if (inimigo.saude <=0 || jogador.saude <=0){ // Verifica se a vida de algum personagem chegou a zero
     determinaVencedor({jogador, inimigo, timerId}) // Função (não definida aqui) que para o jogo e declara o vencedor

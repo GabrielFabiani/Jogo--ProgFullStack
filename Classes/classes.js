@@ -66,7 +66,8 @@ class Lutador extends Sprite {
         scale = 1, 
         framesMax = 1,
         offset = {x: 0, y: 0},
-        sprites
+        sprites,
+        attackBox = {offset: {}, width: undefined, height: undefined}
     }) {
         super({
             position,
@@ -86,9 +87,9 @@ class Lutador extends Sprite {
                 x:this.position.x,
                 y: this.position.y
             },
-            offset, //offset: offset,
-            width: 100,
-            height: 50
+            offset: attackBox.offset, 
+            width: attackBox.width,
+            height: attackBox.height,
         }
         this.color = color
         this.atacando
@@ -112,11 +113,12 @@ class Lutador extends Sprite {
         this.draw() // Redesenha o personagem na nova posição
         this.animateFrame() // Chama a função para animar o personagem
 
+        // Atualiza a posição da caixa de ataque
         this.attackBox.position.x = this.position.x + this.attackBox.offset.x //Atualiza posicao da ferramenta de ataque 
-        this.attackBox.position.y = this.position.y
+        this.attackBox.position.y = this.position.y + this.attackBox.offset.y 
 
-
-        layout.fillRect(this.attackBox.position.x, this.attackBox.position.y, this.attackBox.width, this.attackBox.height)
+        //Desenha o attackbox
+        //layout.fillRect(this.attackBox.position.x, this.attackBox.position.y, this.attackBox.width, this.attackBox.height)
 
         // Atualiza a posição com base na velocidade
         this.position.x += this.velocidade.x
@@ -135,9 +137,6 @@ class Lutador extends Sprite {
     ataque() {
     this.switchSprite('attack1')
     this.atacando = true
-        setTimeout(() => {
-            this.atacando = false
-        }, 100)
     }
 
     switchSprite(sprite) {
