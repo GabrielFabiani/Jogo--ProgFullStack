@@ -115,7 +115,9 @@ class Lutador extends Sprite {
         this.attackBox.position.x = this.position.x + this.attackBox.offset.x //Atualiza posicao da ferramenta de ataque 
         this.attackBox.position.y = this.position.y
 
-        
+
+        layout.fillRect(this.attackBox.position.x, this.attackBox.position.y, this.attackBox.width, this.attackBox.height)
+
         // Atualiza a posição com base na velocidade
         this.position.x += this.velocidade.x
         this.position.y += this.velocidade.y
