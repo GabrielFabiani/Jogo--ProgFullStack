@@ -68,7 +68,11 @@ const jogador = new Lutador({ // Cria o primeiro Lutador (o jogador)
       },
       jump: { // Estado Pulando
         imageSrc: '../img/samuraiMack/Jump.png',
-        framesMax: 8
+        framesMax: 2
+      },
+      fall:{ // Estado Caindo
+        imageSrc: '../img/samuraiMack/Fall.png',
+        framesMax: 2
       }
     }
 });
@@ -139,7 +143,7 @@ function animacao(){
     inimigo.velocidade.x = 0 // Reseta a velocidade horizontal do inimigo
 
     // Move para a esquerda se 'a' estiver pressionada E for a última tecla pressionada
-    jogador.switchSprite('idle') // Assume que o jogador está parado por padrão
+    
     if(teclas.a.pressed && jogador.ultimatecla === 'a'){
         jogador.velocidade.x = -5 // Move para a esquerda
         jogador.switchSprite('run') // Muda para a animação de corrida
@@ -148,10 +152,17 @@ function animacao(){
         jogador.velocidade.x = 5 // Move para a direita
         jogador.switchSprite('run') // Muda para a animação de corrida
     }
+    else{
+        jogador.switchSprite('idle') // Assume que o jogador está parado por padrão
+    }
     // Lógica para mudar para o sprite de pulo
     if (jogador.velocidade.y < 0){ // Se a velocidade vertical for negativa, está subindo (pulando)
         jogador.switchSprite('jump') // Muda para a animação de pulo
+    } else if (jogador.velocidade.y > 0){ // Se a velocidade vertical for positiva, está descendo (caindo)
+        jogador.switchSprite('fall') // Muda para a animação de queda
     }
+
+    // --- Lógica de Movimento Horizontal do Inimigo ---
 
     // Move para a esquerda/direita do inimigo (Lógica idêntica à do jogador)
     if(teclas.ArrowLeft.pressed && inimigo.ultimatecla === 'ArrowLeft'){

@@ -121,6 +121,7 @@ class Lutador extends Sprite {
         // Verifica se o personagem está no chão
         if (this.position.y + this.height + this.velocidade.y >= canvas.height - 96){ //define ate onde o jogador vai cair no inicio
             this.velocidade.y = 0; // Para a queda (velocidade vertical = 0)
+            this.position.y = 330 // Define a posição do personagem no chão 
         } else
             // Aplica a gravidade se o personagem não estiver no chão
             this.velocidade.y += gravidade 
@@ -138,18 +139,28 @@ class Lutador extends Sprite {
                 if (this.image !== this.sprites.idle.image){
                   this.image = this.sprites.idle.image 
                   this.framesMax = this.sprites.idle.framesMax
+                  this.framesCurrent = 0
                 }
                break
             case 'run':
                 if (this.image !== this.sprites.run.image){
                   this.image = this.sprites.run.image 
                   this.framesMax = this.sprites.run.framesMax
+                  this.framesCurrent = 0
                 }
                break
             case 'jump':
                 if (this.image !== this.sprites.jump.image){
                   this.image = this.sprites.jump.image
                   this.framesMax = this.sprites.jump.framesMax
+                  this.framesCurrent = 0
+                }
+               break
+            case 'jump':
+                if (this.image !== this.sprites.fall.image){
+                  this.image = this.sprites.fall.image
+                  this.framesMax = this.sprites.fall.framesMax
+                  this.framesCurrent = 0
                 }
                break
         }
